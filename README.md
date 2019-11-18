@@ -57,7 +57,7 @@ the more formal way:
 	
 or the easier way is:
 
-double click the this script and cmd would pop and automatically running
+double click this script and CMD would pop and automatically running
 
 ## Final words
 
