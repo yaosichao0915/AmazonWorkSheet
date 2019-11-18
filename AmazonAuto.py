@@ -66,7 +66,7 @@ class AamzonWorksheet():
 
     def GrabThePage(self,url):    
        # print(url)
-        self.driver.get("https://www.baidu.com")
+        self.driver.get("https://www.baidu.com") #to make sure it did jump
         self.driver.get(url)
         time.sleep(10)
         try:
