@@ -7,7 +7,7 @@ The function is based on chromedirver,it is more like "help you click".
 Safety guranted, for your own convinence, the steps such as logining, choosing customer or regions are all completed on your own Chrome, fully in your charge.   
 
 ## How to use?
-### 1.download newest python（windows）
+### 1.download latest python（windows）
 https://www.python.org/downloads/release/latest
 
 double click to run the installer. 
@@ -29,7 +29,9 @@ press "win" button and directly type "CMD" and Enter.
 
 The following needs some typing work
 
-	python --version
+```
+python --version 
+```
 	
 if shows this
 
@@ -39,10 +41,13 @@ python is installed correctly and you are good to go next
 
 install some python requirements
 
-	pip install selenium
+```
+pip install selenium
+```
 then
-		
-	pip install pandas
+```
+pip install pandas
+```
 
 if all good, you have successfully set up an environment for the script
 
@@ -52,13 +57,13 @@ You got 2 choices to run the script:
 
 the more formal way:
 
-	cd "to the path you put your codes" // for example 'cd D:\newfolder\'
+	cd "to the path you put your codes"     // for example 'cd D:\newfolder\'
 	python AmazonAuto.py
 	
 or the easier way is:
-
+```
 double click this script and CMD would pop and automatically running
-
+```
 ## Final words
 
 This is a personal work to help to save time.  
