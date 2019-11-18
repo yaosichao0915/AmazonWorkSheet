@@ -9,6 +9,7 @@ from selenium.webdriver.support import expected_conditions as EC
 import calendar,datetime
 import time,os,shutil,sys,re
 import glob
+import pandas as pd
 Destination=str(os.getcwd())
 TempFolder=Destination+"\\temp"
 path_dir=str(os.path.dirname(os.path.abspath(__file__)))
@@ -113,11 +114,11 @@ if __name__ == '__main__':
 1. Input the Customer ID to give a name for the folder
 2. A Chrome page would pop,change the Customer and region to the one you wish to crawl
 3. Do not close the Chrome page,switch to CMD and check and press 'Enter’
-4. The crawller would automately download the file into the temp folder,
+4. The crawler would automatically download the file into the temp folder,
    File would be renamed and gathered into the folder named as the CustomerID you typed in
    sorted by date
 5. Two more optional features, combine the files and download the sum worksheet report
-5. After this round of work done.Chrome would close automately,if you wish to crawl another Customer
+5. After this round of work done.Chrome would close automatically,if you wish to crawl another Customer
    you should run another round(run this program again)
 
 
@@ -166,4 +167,5 @@ if __name__ == '__main__':
     AamzonWorksheet(ID,Date,driver,'sum').GrabThePage(sum_url)
     driver.quit()
     print("All work done")
+    input("Enter to quit")
 
