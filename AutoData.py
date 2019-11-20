@@ -110,20 +110,21 @@ if __name__ == '__main__':
             df_list.append(df)
         combined_csv=pd.concat(df_list)
         combined_csv.to_csv("%s.csv"%ID,index=False,encoding='utf-8-sig')
-    print("""Plz follow the instruction below:
-1. Input the Customer ID to give a name for the folder
-2. A Chrome page would pop,change the Customer and region to the one you wish to crawl
-3. Do not close the Chrome page,switch to CMD and check and press 'Enter’
-4. The crawler would automatically download the file into the temp folder,
-   File would be renamed and gathered into the folder named as the CustomerID you typed in
-   sorted by date
-5. Two more optional features, combine the files and download the sum worksheet report
-5. After this round of work done.Chrome would close automatically,if you wish to crawl another Customer
+    print("""
+Plz follow the instruction below:
+1. Input the Customer ID or name to give a name for the folder 
+2. A Chrome page would pop up, change the Customer and region to the one you wish to run data from.
+3. Do not close the Chrome page,switch to Command and press 'Enter’
+4. The crawler would automatically download the file into a temp folder,
+   File would be renamed and gathered into the folder named as the CustomerID/name you typed in, 
+   and sorted by date
+5. Two more optional choices are offered, 1)combine these files 2) download the montly summary report
+5. After all this round of work done.Press 'Enter' and Chrome would close automatically
+6. If you wish to crawl another Customer
    you should run another round(run this program again)
 
-
 """)
-    ID = input("input Customer ID:  ")
+    ID = input("input Customer ID/name:  ")
 #begin crawl    
     chrome_options = webdriver.ChromeOptions() 
     chrome_options.add_argument("user-data-dir=%s\\ChromeProfile"%path_dir) #Path to your chrome profile
@@ -134,7 +135,7 @@ if __name__ == '__main__':
     chrome_options.add_experimental_option('prefs', prefs)
     driver = webdriver.Chrome(options=chrome_options)
     driver.get("https://sellercentral.amazon.com/home")
-    print("plz make sure you changed the customer correctly")
+    print("plz make sure you've selected your customer correctly")
     input("Enter to confirm")
     currentPageUrl = driver.current_url
     region_code=re.search(r'amazon.(.*?)/.*',currentPageUrl)[1]
@@ -146,7 +147,7 @@ if __name__ == '__main__':
         AamzonWorksheet(ID,Date,driver,Date[0][:7]).GrabThePage(detail_url)
     #driver.quit()
     # combine 
-    print ("Do you wish to combine\nWarning!every csv in that folder would be combined")
+    print ("\nDo you wish to combine? \nWarning!every csv in the folder would be combined")
     choice = input ("Y/N?: ")
     if choice.lower()=='y':
         print("combining CSV...")
@@ -158,13 +159,13 @@ if __name__ == '__main__':
     else:
         print ("You can run the combine code yourself")
     # for the sum report
-    month = input("input the starting month of the sum report as '201801': ")
+    month = input("\nTo download the monthly summary report, input the starting month as '201801': ")
     current_month = str(datetime.date.today())[:7].replace('-','')
     monthgap = month + '-' + current_month
     DateList=pickmonthgap(monthgap)
     Date=[DateList[0][0],DateList[-1][1]]
     sum_url = "https://sellercentral.amazon.%s/gp/site-metrics/report.html#&cols=/c0/c1/c2/c3/c4/c5-orange/c6/c7/c8/c9/c10/c11/c12/c14-blue/c16/c17/c20&sortColumn=1&filterFromDate=%s&filterToDate=%s&fromDate=%s&toDate=%s&reportID=102:SalesTrafficTimeSeries&sortIsAscending=1&currentPage=0&dateUnit=3&viewDateUnits=ALL&runDate="%(region_code,Date[0],Date[1],Date[0],Date[1])
-    AamzonWorksheet(ID,Date,driver,'sum').GrabThePage(sum_url)
+    AamzonWorksheet(ID,Date,driver,'monthly summary report').GrabThePage(sum_url)
     driver.quit()
     print("All work done")
     input("Enter to quit")
