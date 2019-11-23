@@ -61,26 +61,35 @@ class AamzonWorksheet():
                 print("Rename Error")
                 return -1
         else:
-            print("download timeout")
+            print("download failed")
             return -1
 
     def GrabThePage(self,url):    
-       # print(url)
+       # print(url)。
+        starttime=time.time()
         self.driver.get("https://www.baidu.com") #to make sure it did jump
         self.driver.get(url)
-        time.sleep(10)
-        try:
-            element = WebDriverWait(self.driver, 10).until(
-            EC.presence_of_element_located((By.XPATH, '//*[@id="downloadCSV"]'))
-            )
-            print("page loading sucess")
-        finally:
-            self.driver.find_element_by_id("export").click()
-            self.driver.find_element_by_id("downloadCSV").click()
-            print("Now downloading %s for the date of %s"%(self.ID,self.Date[0][:7]))
-            time.sleep(5)
-            duration = self.download_wait('%s'%TempFolder,20)
-            print("downloaded and renamed,taking time of %s"%duration)
+       # time.sleep(10)
+        element = WebDriverWait(self.driver, 10).until(
+        EC.presence_of_element_located((By.XPATH, '//*[@id="downloadCSV"]'))
+        )
+        #print(time.time()-starttime)
+        print("page loading sucess")
+        time.sleep(1)  #wait to be clickable
+        for i in range(10):
+            try:
+                self.driver.find_element_by_id("export").click()
+                self.driver.find_element_by_id("downloadCSV").click()
+            except:
+                print("waiting to be clickable %s seconds"%(i+1))
+                time.sleep(1)
+                continue
+            break
+                
+        print("Now downloading %s for the date of %s"%(self.ID,self.Date[0][:7]))
+        time.sleep(5)
+        duration = self.download_wait('%s'%TempFolder,20)
+        print("downloaded and renamed,taking time of %s"%duration)
             
            # self.driver.quit()
     
@@ -138,16 +147,19 @@ Plz follow the instruction below:
     print("plz make sure you've selected your customer correctly")
     input("Enter to confirm")
     currentPageUrl = driver.current_url
-    region_code=re.search(r'amazon.(.*?)/.*',currentPageUrl)[1]
+    #region_code=re.search(r'amazon.(.*?)/.*',currentPageUrl)[1]
+    url_head=re.search(r'https://(.*?)/.*',currentPageUrl)[1]
     monthgap = input ("input the month gap as '201909-201911': ")
     DateList=pickmonthgap(monthgap)
    
     for Date in DateList:
-        detail_url="https://sellercentral.amazon.%s/gp/site-metrics/report.html#&cols=/c0/c1/c2/c3/c4/c5/c6/c7/c8/c9/c10/c11/c12/c13/c14/c15&sortColumn=16&filterFromDate=%s&filterToDate=%s&fromDate=%s&toDate=%s&reportID=102:DetailSalesTrafficByChildItem&sortIsAscending=0&currentPage=0&dateUnit=1&viewDateUnits=ALL&runDate="%(region_code,Date[0],Date[1],Date[0],Date[1])
+        #detail_url="https://sellercentral.amazon.%s/gp/site-metrics/report.html#&cols=/c0/c1/c2/c3/c4/c5/c6/c7/c8/c9/c10/c11/c12/c13/c14/c15&sortColumn=16&filterFromDate=%s&filterToDate=%s&fromDate=%s&toDate=%s&reportID=102:DetailSalesTrafficByChildItem&sortIsAscending=0&currentPage=0&dateUnit=1&viewDateUnits=ALL&runDate="%(region_code,Date[0],Date[1],Date[0],Date[1])
+        detail_url="https://%s/gp/site-metrics/report.html#&cols=/c0/c1/c2/c3/c4/c5/c6/c7/c8/c9/c10/c11/c12/c13/c14/c15&sortColumn=16&filterFromDate=%s&filterToDate=%s&fromDate=%s&toDate=%s&reportID=102:DetailSalesTrafficByChildItem&sortIsAscending=0&currentPage=0&dateUnit=1&viewDateUnits=ALL&runDate="%(url_head,Date[0],Date[1],Date[0],Date[1])
         AamzonWorksheet(ID,Date,driver,Date[0][:7]).GrabThePage(detail_url)
     #driver.quit()
     # combine 
-    print ("\nDo you wish to combine? \nWarning!every csv in the folder would be combined")
+  #  print ("\nDo you wish to combine? \nWarning! every csv in the folder would be combined")
+    '''
     choice = input ("Y/N?: ")
     if choice.lower()=='y':
         print("combining CSV...")
@@ -158,13 +170,20 @@ Plz follow the instruction below:
             print ("combine error!!! plz run combine code yourself")
     else:
         print ("You can run the combine code yourself")
+    '''
+    print("combining CSV...")
+    try:
+        concat(ID,'%s\\%s'%(Destination,ID))
+        print ("combie job done!")
+    except:
+        print ("combine error!!! plz run combine code yourself")
     # for the sum report
     month = input("\nTo download the monthly summary report, input the starting month as '201801': ")
     current_month = str(datetime.date.today())[:7].replace('-','')
     monthgap = month + '-' + current_month
     DateList=pickmonthgap(monthgap)
     Date=[DateList[0][0],DateList[-1][1]]
-    sum_url = "https://sellercentral.amazon.%s/gp/site-metrics/report.html#&cols=/c0/c1/c2/c3/c4/c5-orange/c6/c7/c8/c9/c10/c11/c12/c14-blue/c16/c17/c20&sortColumn=1&filterFromDate=%s&filterToDate=%s&fromDate=%s&toDate=%s&reportID=102:SalesTrafficTimeSeries&sortIsAscending=1&currentPage=0&dateUnit=3&viewDateUnits=ALL&runDate="%(region_code,Date[0],Date[1],Date[0],Date[1])
+    sum_url = "https://%s/gp/site-metrics/report.html#&cols=/c0/c1/c2/c3/c4/c5-orange/c6/c7/c8/c9/c10/c11/c12/c14-blue/c16/c17/c20&sortColumn=1&filterFromDate=%s&filterToDate=%s&fromDate=%s&toDate=%s&reportID=102:SalesTrafficTimeSeries&sortIsAscending=1&currentPage=0&dateUnit=3&viewDateUnits=ALL&runDate="%(url_head,Date[0],Date[1],Date[0],Date[1])
     AamzonWorksheet(ID,Date,driver,'monthly summary report').GrabThePage(sum_url)
     driver.quit()
     print("All work done")
