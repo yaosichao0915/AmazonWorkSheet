@@ -117,7 +117,7 @@ if __name__ == '__main__':
             df=pd.read_csv(f,encoding='utf-8')
             df.insert(0,'Source.Name',f.rstrip('.csv'))
             df_list.append(df)
-        combined_csv=pd.concat(df_list)
+        combined_csv=pd.concat(df_list,sort=False)
         combined_csv.to_csv("%s.csv"%ID,index=False,encoding='utf-8-sig')
     print("""
 Plz follow the instruction below:
