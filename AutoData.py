@@ -231,7 +231,7 @@ Plz follow the instruction below:
     for Date in DateList:
         Date1=Date.copy()
         Date_url = date_format(Date1,lang)
-        detail_url="https://%s/gp/site-metrics/report.html#&cols=/c0/c1/c2/c3/c4/c5/c6/c7/c8/c9/c10/c11/c12&sortColumn=1&filterFromDate=%s&filterToDate=%s&fromDate=%s&toDate=%s&reportID=102:DetailSalesTrafficByChildItem&sortIsAscending=0&currentPage=0&dateUnit=1&viewDateUnits=ALL&runDate="%(url_head,Date_url[0],Date_url[1],Date_url[0],Date_url[1])
+        detail_url="https://%s/gp/site-metrics/report.html#&cols=/c0/c1/c2/c3/c4/c5/c6/c7/c8/c9/c10/c11/c12/c13/c14/c15&sortColumn=16&filterFromDate=%s&filterToDate=%s&fromDate=%s&toDate=%s&reportID=102:DetailSalesTrafficByChildItem&sortIsAscending=0&currentPage=0&dateUnit=1&viewDateUnits=ALL&runDate="%(url_head,Date_url[0],Date_url[1],Date_url[0],Date_url[1])
         print(Date[0][:7])
         AmazonWorksheet(ID,Date,driver,Date[0][:7]).GrabThePage(detail_url)
     # combine 
@@ -262,7 +262,7 @@ Plz follow the instruction below:
     Date=[DateList[0][0],DateList[-1][1]]
     Date2=Date.copy()
     Date_url = date_format(Date2,lang)
-    sum_url = "https://%s/gp/site-metrics/report.html#&cols=/c0/c1/c2/c3/c4/c5-orange/c6/c7/c8/c9/c10/c11/c12&sortColumn=1&filterFromDate=%s&filterToDate=%s&fromDate=%s&toDate=%s&reportID=102:SalesTrafficTimeSeries&sortIsAscending=1&currentPage=0&dateUnit=3&viewDateUnits=ALL&runDate="%(url_head,Date_url[0],Date_url[1],Date_url[0],Date_url[1])
+    sum_url = "https://%s/gp/site-metrics/report.html#&cols=/c0/c1/c2/c3/c4/c5-orange/c6/c7/c8/c9/c10/c11/c12/c14-blue/c16/c17/c20&sortColumn=1&filterFromDate=%s&filterToDate=%s&fromDate=%s&toDate=%s&reportID=102:SalesTrafficTimeSeries&sortIsAscending=1&currentPage=0&dateUnit=3&viewDateUnits=ALL&runDate="%(url_head,Date_url[0],Date_url[1],Date_url[0],Date_url[1])
     AmazonWorksheet(ID,Date,driver,'monthly summary report').GrabThePage(sum_url)
     driver.quit()
     print("All work done")
