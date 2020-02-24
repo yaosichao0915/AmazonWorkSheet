@@ -209,61 +209,68 @@ Plz follow the instruction below:
 
 """)
     ID = input("input Customer ID/name:  ")
-#begin crawl    
-    chrome_options = webdriver.ChromeOptions() 
-    chrome_options.add_argument("user-data-dir=%s\\ChromeProfile"%path_dir) #Path to your chrome profile
-    prefs = {'download.default_directory' : '%s'%TempFolder,
-        "download.prompt_for_download": False,
-        "download.directory_upgrade": True,
-        "safebrowsing.enabled": True}
-    chrome_options.add_experimental_option('prefs', prefs)
-    driver = webdriver.Chrome(options=chrome_options)
-    driver.get("https://sellercentral.amazon.com/home")         #The page to change merchant and region
-    print("plz make sure you've selected your customer, region and language correctly")
-    input("Enter to confirm")
-    
-    currentPageUrl = driver.current_url
-    url_head=re.search(r'https://(.*?)/.*',currentPageUrl)[1]    #Due to the difference of url among regions, use the shown one
-    lang = cookie_modify(driver.get_cookies())['mons-lang']    #Due to the difference format of date among language, use the shown one
-    monthgap = input ("input the month gap as '201909-201911': ")
-    DateList=pickmonthgap(monthgap)
+#begin crawl
+    try:
    
-    for Date in DateList:
-        Date1=Date.copy()
-        Date_url = date_format(Date1,lang)
-        detail_url="https://%s/gp/site-metrics/report.html#&cols=/c0/c1/c2/c3/c4/c5/c6/c7/c8/c9/c10/c11/c12/c13/c14/c15&sortColumn=16&filterFromDate=%s&filterToDate=%s&fromDate=%s&toDate=%s&reportID=102:DetailSalesTrafficByChildItem&sortIsAscending=0&currentPage=0&dateUnit=1&viewDateUnits=ALL&runDate="%(url_head,Date_url[0],Date_url[1],Date_url[0],Date_url[1])
-        print(Date[0][:7])
-        AmazonWorksheet(ID,Date,driver,Date[0][:7]).GrabThePage(detail_url)
-    # combine 
-    '''
-    print ("\nDo you wish to combine? \nWarning! every csv in the folder would be combined")   
-    choice = input ("Y/N?: ")
-    if choice.lower()=='y':
+        chrome_options = webdriver.ChromeOptions() 
+        chrome_options.add_argument("user-data-dir=%s\\ChromeProfile"%path_dir) #Path to your chrome profile
+        prefs = {'download.default_directory' : '%s'%TempFolder,
+            "download.prompt_for_download": False,
+            "download.directory_upgrade": True,
+            "safebrowsing.enabled": False}
+        chrome_options.add_experimental_option('prefs', prefs)
+       # print(os.getcwd())
+        driver = webdriver.Chrome(options=chrome_options)
+        driver.get("https://sellercentral.amazon.com/home")         #The page to change merchant and region
+        print("plz make sure you've selected your customer, region and language correctly")
+        input("Enter to confirm")
+        
+        currentPageUrl = driver.current_url
+        url_head=re.search(r'https://(.*?)/.*',currentPageUrl)[1]    #Due to the difference of url among regions, use the shown one
+        lang = cookie_modify(driver.get_cookies())['mons-lang']    #Due to the difference format of date among language, use the shown one
+        monthgap = input ("input the month gap as '201909-201911': ")
+        DateList=pickmonthgap(monthgap)
+       
+        for Date in DateList:
+            Date1=Date.copy()
+            Date_url = date_format(Date1,lang)
+            detail_url="https://%s/gp/site-metrics/report.html#&cols=/c0/c1/c2/c3/c4/c5/c6/c7/c8/c9/c10/c11/c12/c13/c14/c15&sortColumn=16&filterFromDate=%s&filterToDate=%s&fromDate=%s&toDate=%s&reportID=102:DetailSalesTrafficByChildItem&sortIsAscending=0&currentPage=0&dateUnit=1&viewDateUnits=ALL&runDate="%(url_head,Date_url[0],Date_url[1],Date_url[0],Date_url[1])
+            print(Date[0][:7])
+            AmazonWorksheet(ID,Date,driver,Date[0][:7]).GrabThePage(detail_url)
+        # combine 
+        '''
+        print ("\nDo you wish to combine? \nWarning! every csv in the folder would be combined")   
+        choice = input ("Y/N?: ")
+        if choice.lower()=='y':
+            print("combining CSV...")
+            try:
+                concat(ID,'%s\\%s'%(Destination,ID))
+                print ("combie job done!")
+            except:
+                print ("combine error!!! plz run combine code yourself")
+        else:
+            print ("You can run the combine code yourself")
+        '''
         print("combining CSV...")
         try:
             concat(ID,'%s\\%s'%(Destination,ID))
             print ("combie job done!")
         except:
             print ("combine error!!! plz run combine code yourself")
-    else:
-        print ("You can run the combine code yourself")
-    '''
-    print("combining CSV...")
-    try:
-        concat(ID,'%s\\%s'%(Destination,ID))
-        print ("combie job done!")
-    except:
-        print ("combine error!!! plz run combine code yourself")
-    # for the sum report
-    month = input("\nTo download the monthly summary report, input the starting month as '201801': ")
-    current_month = str(datetime.date.today())[:7].replace('-','')
-    monthgap = month + '-' + current_month
-    DateList=pickmonthgap(monthgap)
-    Date=[DateList[0][0],DateList[-1][1]]
-    Date2=Date.copy()
-    Date_url = date_format(Date2,lang)
-    sum_url = "https://%s/gp/site-metrics/report.html#&cols=/c0/c1/c2/c3/c4/c5-orange/c6/c7/c8/c9/c10/c11/c12/c14-blue/c16/c17/c20&sortColumn=1&filterFromDate=%s&filterToDate=%s&fromDate=%s&toDate=%s&reportID=102:SalesTrafficTimeSeries&sortIsAscending=1&currentPage=0&dateUnit=3&viewDateUnits=ALL&runDate="%(url_head,Date_url[0],Date_url[1],Date_url[0],Date_url[1])
-    AmazonWorksheet(ID,Date,driver,'monthly summary report').GrabThePage(sum_url)
-    driver.quit()
-    print("All work done")
-    input("Enter to quit")
+        # for the sum report
+        month = input("\nTo download the monthly summary report, input the starting month as '201801': ")
+        current_month = str(datetime.date.today())[:7].replace('-','')
+        monthgap = month + '-' + current_month
+        DateList=pickmonthgap(monthgap)
+        Date=[DateList[0][0],DateList[-1][1]]
+        Date2=Date.copy()
+        Date_url = date_format(Date2,lang)
+        sum_url = "https://%s/gp/site-metrics/report.html#&cols=/c0/c1/c2/c3/c4/c5-orange/c6/c7/c8/c9/c10/c11/c12/c14-blue/c16/c17/c20&sortColumn=1&filterFromDate=%s&filterToDate=%s&fromDate=%s&toDate=%s&reportID=102:SalesTrafficTimeSeries&sortIsAscending=1&currentPage=0&dateUnit=3&viewDateUnits=ALL&runDate="%(url_head,Date_url[0],Date_url[1],Date_url[0],Date_url[1])
+        AmazonWorksheet(ID,Date,driver,'monthly summary report').GrabThePage(sum_url)
+        driver.quit()
+        print("All work done")
+        input("Enter to quit")
+    except Exception as ex:
+        print("Ops! Someting goes wrong")
+        print (ex)
+        input("error!!!Plz check the error message above!") 
